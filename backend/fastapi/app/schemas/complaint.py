@@ -11,7 +11,7 @@ class ComplaintCreate(BaseModel):
     city: str
     address: str
     pincode: str
-    image_url: Optional[str]
+    image_url: Optional[str] = None
 
 
 class ComplaintResponse(BaseModel):
@@ -24,8 +24,12 @@ class ComplaintResponse(BaseModel):
     city: str
     address: str
     pincode: str
-    image_url: Optional[str]
+    image_url: Optional[str] = None
     status: str
+    category: Optional[str] = None
+    department: Optional[str] = None
+    severity: Optional[str] = None
     ai_confidence: Optional[int]
+    ai_summary: Optional[str] = None
     generated_complaint: Optional[str]
     submitted_at: Optional[datetime]

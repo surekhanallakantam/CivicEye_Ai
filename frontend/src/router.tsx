@@ -6,6 +6,8 @@ import { AdminDashboardPage } from '@/pages/AdminDashboardPage';
 import { ClusterWorkspacePage } from '@/pages/ClusterWorkspacePage';
 import { GeographicAnalyticsPage } from '@/pages/GeographicAnalyticsPage';
 import { DepartmentPage } from '@/pages/DepartmentPage';
+import { LoginPage } from '@/pages/LoginPage';
+import { RegisterPage } from '@/pages/RegisterPage';
 
 export function AppRouter() {
   return (
@@ -18,6 +20,8 @@ export function AppRouter() {
         <Route path="/clusters" element={<ClusterWorkspacePage />} />
         <Route path="/analytics" element={<GeographicAnalyticsPage />} />
         <Route path="/department" element={<DepartmentPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
       </Routes>
     </BrowserRouter>
   );

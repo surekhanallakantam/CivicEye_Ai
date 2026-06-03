@@ -1,3 +1,4 @@
+import { Link, useNavigate } from 'react-router-dom';
 import {
   ArrowRight,
   BadgeInfo,
@@ -22,10 +23,9 @@ import {
 } from 'lucide-react';
 
 const navItems = [
-  { label: 'Home', href: '#top', icon: Home, active: true },
-  { label: 'My Complaints', href: '#tracking', icon: LayoutList },
-  { label: 'Track Complaint', href: '#tracking', icon: Clock3 },
-  { label: 'FAQs', href: '#faq', icon: BadgeInfo },
+  { label: 'Home', to: '/', icon: Home, active: true },
+  { label: 'My Complaints', to: '/citizen', icon: LayoutList, active: false },
+  { label: 'Track Complaint', to: '/track', icon: Clock3, active: false },
 ] as const;
 
 const aiSteps = [
@@ -123,9 +123,9 @@ export function HomePage() {
             {navItems.map((item) => {
               const Icon = item.icon;
               return (
-                <a
+                <Link
                   key={item.label}
-                  href={item.href}
+                  to={item.to}
                   className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition ${
                     item.active
                       ? 'bg-civic-infoSoft text-civic-primary shadow-sm'
@@ -134,7 +134,7 @@ export function HomePage() {
                 >
                   <Icon className="h-4 w-4" />
                   {item.label}
-                </a>
+                </Link>
               );
             })}
           </nav>
@@ -145,10 +145,13 @@ export function HomePage() {
               English
               <ChevronDown className="h-4 w-4 text-civic-muted" />
             </button>
-            <button className="inline-flex items-center gap-2 rounded-full border border-civic-line bg-civic-surface px-4 py-2 text-sm font-medium text-civic-text shadow-sm transition hover:bg-civic-surfaceSoft">
+            <Link
+              to="/login"
+              className="inline-flex items-center gap-2 rounded-full border border-civic-line bg-civic-surface px-4 py-2 text-sm font-medium text-civic-text shadow-sm transition hover:bg-civic-surfaceSoft"
+            >
               <User2 className="h-4 w-4 text-civic-muted" />
               Login
-            </button>
+            </Link>
           </div>
         </div>
 
@@ -186,13 +189,13 @@ export function HomePage() {
 
               <UploadCard />
 
-              <button
-                type="button"
+              <Link
+                to="/citizen"
                 className="inline-flex w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-civic-primary to-civic-accent px-6 py-4 text-base font-semibold text-white shadow-glow transition hover:scale-[1.01] hover:brightness-105"
               >
                 <Send className="h-5 w-5" />
                 Submit Complaint
-              </button>
+              </Link>
 
               <div className="flex items-center justify-center gap-2 text-sm text-civic-muted">
                 <ShieldCheck className="h-4 w-4 text-civic-success" />

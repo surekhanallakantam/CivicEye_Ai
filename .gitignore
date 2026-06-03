@@ -1,0 +1,29 @@
+# Python cache and temporary files
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+
+# Environment variables (secrets)
+.env
+.env.*
+!.env.example
+
+# Node / frontend build output
+node_modules/
+dist/
+dist-ssr/
+*.tsbuildinfo
+*.local
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp

@@ -8,7 +8,6 @@ export type ComplaintCreatePayload = {
   city: string;
   address: string;
   pincode: string;
-  image_url?: string;
 };
 
 export async function submitComplaint(payload: ComplaintCreatePayload) {
@@ -20,3 +19,14 @@ export async function trackComplaint(complaintCode: string) {
   const response = await apiClient.get(`/api/v1/complaints/${complaintCode}`);
   return response.data;
 }
+
+export async function trackComplaintTimeline(complaintCode: string) {
+  const response = await apiClient.get(`/api/v1/complaints/${complaintCode}/timeline`);
+  return response.data;
+}
+
+export async function getMyComplaints() {
+  const response = await apiClient.get('/api/v1/complaints/my');
+  return response.data;
+}
+
