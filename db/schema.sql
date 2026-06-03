@@ -42,9 +42,20 @@ exception
   when duplicate_object then null;
 end $$;
 
+create table if not exists citizens (
+  id uuid primary key default gen_random_uuid(),
+  email text not null unique,
+  password_hash text not null,
+  name text not null,
+  phone_number text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 create table if not exists complaints (
   id uuid primary key default gen_random_uuid(),
   complaint_code text not null unique,
+  citizen_id uuid references citizens(id) on delete set null,
   citizen_name text not null,
   phone_number text,
   description text not null,
