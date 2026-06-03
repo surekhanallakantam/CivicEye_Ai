@@ -1,0 +1,65 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./index.html', './src/**/*.{ts,tsx}'],
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      },
+      colors: {
+        civic: {
+          page: '#f7fbff',
+          background: '#eef5ff',
+          surface: '#ffffff',
+          surfaceSoft: '#f7f9fd',
+          line: '#dde6f0',
+          text: '#16213a',
+          muted: '#66768f',
+          primary: '#1d5fe0',
+          primaryDark: '#1546b1',
+          success: '#16a34a',
+          accent: '#22c55e',
+          accentSoft: '#d9f7ea',
+          accent2: '#6ea8fe',
+          info: '#2563eb',
+          infoSoft: '#dfeaff',
+          warning: '#f59e0b',
+          danger: '#ef4444',
+        },
+        admin: {
+          bg: '#07131f',
+          panel: '#0b1d2d',
+          panelSoft: '#10283d',
+          line: '#1e3a52',
+          text: '#e6f1ff',
+          muted: '#89a7c7',
+          primary: '#1d5fe0',
+          primaryDark: '#1546b1',
+          success: '#22c55e',
+          accent: '#4fd1c5',
+          accentSoft: '#d9f7ea',
+          accent2: '#6ea8fe',
+          info: '#2563eb',
+          infoSoft: '#dfeaff',
+          warning: '#f59e0b',
+          danger: '#ef4444',
+          page: '#07131f',
+          background: '#0b1d2d',
+          surface: '#0b1d2d',
+          surfaceSoft: '#10283d',
+        },
+      },
+      boxShadow: {
+        soft: '0 16px 40px rgba(18, 55, 113, 0.08)',
+        glow: '0 20px 50px rgba(29, 95, 224, 0.18)',
+      },
+      backgroundImage: {
+        'home-hero': 'linear-gradient(180deg, #1c62e2 0%, #1a54c9 100%)',
+      },
+      borderRadius: {
+        '3xl': '1.5rem',
+      },
+    },
+  },
+  plugins: [],
+};
