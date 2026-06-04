@@ -16,6 +16,7 @@ class CitizenResponse(BaseModel):
     name: str
     email: str
     phone_number: Optional[str] = None
+    role: Optional[str] = None
 
 class TokenResponse(BaseModel):
     access_token: str

@@ -48,6 +48,7 @@ export function ComplaintTracking() {
   const [timeline, setTimeline] = useState<TimelineEvent[]>([]);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showStatus, setShowStatus] = useState(false);
 
   const handleTrack = async () => {
     if (!code.trim()) return;
@@ -55,6 +56,7 @@ export function ComplaintTracking() {
     setError('');
     setComplaint(null);
     setTimeline([]);
+    setShowStatus(false);
 
     try {
       const compData = await trackComplaint(code.trim());
@@ -114,124 +116,166 @@ export function ComplaintTracking() {
       )}
 
       {complaint && (
-        <div className="mt-8 space-y-6">
-          <div className="grid gap-6 md:grid-cols-2">
-            <div className="rounded-3xl border border-civic-line bg-civic-surfaceSoft p-6 space-y-4">
-              <h3 className="text-lg font-semibold text-civic-text">Grievance Information</h3>
-              <hr className="border-civic-line" />
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="text-civic-muted block text-xs uppercase tracking-wider">Citizen Name</span>
-                  <span className="font-medium text-civic-text">{complaint.name}</span>
-                </div>
-                <div>
-                  <span className="text-civic-muted block text-xs uppercase tracking-wider">Submitted On</span>
-                  <span className="font-medium text-civic-text">
-                    {new Date(complaint.submitted_at).toLocaleDateString()}
-                  </span>
-                </div>
-                <div className="col-span-2">
-                  <span className="text-civic-muted block text-xs uppercase tracking-wider">Description</span>
-                  <span className="text-civic-text leading-relaxed">{complaint.description}</span>
-                </div>
-                {complaint.generated_complaint && (
-                  <div className="col-span-2 bg-white border border-civic-line p-4 rounded-2xl">
-                    <span className="text-civic-muted block text-xs uppercase tracking-wider mb-1">AI Official Version</span>
-                    <span className="text-civic-text italic">"{complaint.generated_complaint}"</span>
-                  </div>
-                )}
+        <div className="mt-8">
+          {!showStatus ? (
+            <div
+              onClick={() => setShowStatus(true)}
+              className="rounded-3xl border border-civic-line bg-civic-surfaceSoft p-6 hover:shadow-md transition cursor-pointer flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-l-4 border-l-civic-primary"
+            >
+              <div>
+                <span className="font-mono text-lg font-bold text-civic-text">{complaint.complaint_code}</span>
+                <p className="text-sm text-civic-muted mt-1">
+                  <strong>Category:</strong> {complaint.category || 'Categorizing...'}
+                </p>
+                <p className="text-xs text-civic-muted mt-0.5">
+                  <strong>Filed On:</strong> {new Date(complaint.submitted_at).toLocaleDateString()}
+                </p>
+              </div>
+              
+              <div className="flex flex-wrap items-center gap-3">
+                <span className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase ${
+                  complaint.status.toLowerCase() === 'resolved' ? 'bg-green-100 text-green-800 border-green-200' :
+                  complaint.status.toLowerCase() === 'rejected' ? 'bg-red-100 text-red-800 border-red-200' :
+                  'bg-blue-100 text-blue-800 border-blue-200'
+                }`}>
+                  {complaint.status.replace('_', ' ')}
+                </span>
+                <span className="text-sm font-semibold text-civic-primary hover:text-civic-primaryDark flex items-center gap-1">
+                  Click to view status & timeline &rarr;
+                </span>
               </div>
             </div>
-
-            <div className="rounded-3xl border border-civic-line bg-civic-surfaceSoft p-6 space-y-4">
-              <h3 className="text-lg font-semibold text-civic-text">Resolution Details</h3>
-              <hr className="border-civic-line" />
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="text-civic-muted block text-xs uppercase tracking-wider">Category</span>
-                  <span className="font-medium text-civic-text">{complaint.category || 'Categorizing...'}</span>
-                </div>
-                <div>
-                  <span className="text-civic-muted block text-xs uppercase tracking-wider">Assigned Department</span>
-                  <span className="font-medium text-civic-text">{complaint.department || 'Pending Routing'}</span>
-                </div>
-                <div>
-                  <span className="text-civic-muted block text-xs uppercase tracking-wider">Severity</span>
-                  <span className="font-medium text-civic-text capitalize">{complaint.severity || 'Medium'}</span>
-                </div>
-                <div>
-                  <span className="text-civic-muted block text-xs uppercase tracking-wider">Status</span>
-                  <span className="font-semibold text-civic-primary uppercase">{complaint.status}</span>
-                </div>
+          ) : (
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <h3 className="text-xl font-bold text-civic-text">Grievance Progress Details</h3>
+                <button
+                  onClick={() => setShowStatus(false)}
+                  className="text-xs font-semibold border border-civic-line rounded-full px-4 py-1.5 hover:bg-civic-surfaceSoft transition text-civic-muted"
+                >
+                  Collapse Details
+                </button>
               </div>
-            </div>
-          </div>
 
-          <div className="rounded-3xl border border-civic-line bg-civic-surfaceSoft p-6">
-            <h3 className="text-lg font-semibold text-civic-text mb-6">Complaint Progress Timeline</h3>
-            <div className="relative border-l border-civic-line ml-4 space-y-8 pb-4">
-              {STAGES.map((stage) => {
-                const status = getStageStatus(stage.key);
-                let badgeColor = 'bg-white border-civic-line text-civic-muted';
-                let textColor = 'text-civic-muted';
-
-                if (status === 'completed') {
-                  badgeColor = 'bg-civic-accent text-white border-civic-accent';
-                  textColor = 'text-civic-text';
-                } else if (status === 'active') {
-                  badgeColor = 'bg-civic-primary text-white border-civic-primary ring-4 ring-civic-infoSoft';
-                  textColor = 'text-civic-text font-semibold';
-                } else if (status === 'rejected') {
-                  badgeColor = 'bg-red-500 text-white border-red-500';
-                  textColor = 'text-red-600';
-                }
-
-                // Check for updates matching this status key in history
-                const matches = timeline.filter(event => {
-                  const normalizedStatus = event.new_status.toLowerCase();
-                  return normalizedStatus === stage.key || 
-                         (stage.key === 'feedback_received' && normalizedStatus === 'feedback_received');
-                });
-
-                return (
-                  <div key={stage.key} className="relative pl-8">
-                    <div className={`absolute -left-3.5 top-0.5 flex h-7 w-7 items-center justify-center rounded-full border-2 ${badgeColor}`}>
-                      {status === 'completed' ? (
-                        <CheckCircle2 className="h-4 w-4" />
-                      ) : (
-                        <div className="h-2 w-2 rounded-full bg-current" />
-                      )}
+              <div className="grid gap-6 md:grid-cols-2">
+                <div className="rounded-3xl border border-civic-line bg-civic-surfaceSoft p-6 space-y-4">
+                  <h3 className="text-lg font-semibold text-civic-text">Grievance Information</h3>
+                  <hr className="border-civic-line" />
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-civic-muted block text-xs uppercase tracking-wider">Citizen Name</span>
+                      <span className="font-medium text-civic-text">{complaint.name}</span>
                     </div>
                     <div>
-                      <h4 className={`text-base ${textColor}`}>{stage.label}</h4>
-                      <p className="mt-1 text-sm text-civic-muted">{stage.desc}</p>
-                      
-                      {matches.length > 0 && (
-                        <div className="mt-2 space-y-2">
-                          {matches.map(m => (
-                            <div key={m.id} className="bg-white/80 rounded-xl p-3 border border-civic-line text-xs text-civic-muted space-y-1">
-                              <div className="flex items-center gap-1 text-civic-text font-medium">
-                                <Info className="h-3.5 w-3.5 text-civic-primary" />
-                                <span>{m.note}</span>
-                              </div>
-                              <div className="flex items-center justify-between text-[10px] pt-1">
-                                <span className="flex items-center gap-1">
-                                  <Building className="h-3 w-3" /> By: {m.changed_by}
-                                </span>
-                                <span className="flex items-center gap-1">
-                                  <Calendar className="h-3 w-3" /> {new Date(m.changed_at).toLocaleString()}
-                                </span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
+                      <span className="text-civic-muted block text-xs uppercase tracking-wider">Submitted On</span>
+                      <span className="font-medium text-civic-text">
+                        {new Date(complaint.submitted_at).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div className="col-span-2">
+                      <span className="text-civic-muted block text-xs uppercase tracking-wider">Description</span>
+                      <span className="text-civic-text leading-relaxed">{complaint.description}</span>
+                    </div>
+                    {complaint.generated_complaint && (
+                      <div className="col-span-2 bg-white border border-civic-line p-4 rounded-2xl">
+                        <span className="text-civic-muted block text-xs uppercase tracking-wider mb-1">AI Official Version</span>
+                        <div className="text-civic-text italic whitespace-pre-line mt-1">{complaint.generated_complaint}</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="rounded-3xl border border-civic-line bg-civic-surfaceSoft p-6 space-y-4">
+                  <h3 className="text-lg font-semibold text-civic-text">Resolution Details</h3>
+                  <hr className="border-civic-line" />
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-civic-muted block text-xs uppercase tracking-wider">Category</span>
+                      <span className="font-medium text-civic-text">{complaint.category || 'Categorizing...'}</span>
+                    </div>
+                    <div>
+                      <span className="text-civic-muted block text-xs uppercase tracking-wider">Assigned Department</span>
+                      <span className="font-medium text-civic-text">{complaint.department || 'Pending Routing'}</span>
+                    </div>
+                    <div>
+                      <span className="text-civic-muted block text-xs uppercase tracking-wider">Severity</span>
+                      <span className="font-medium text-civic-text capitalize">{complaint.severity || 'Medium'}</span>
+                    </div>
+                    <div>
+                      <span className="text-civic-muted block text-xs uppercase tracking-wider">Status</span>
+                      <span className="font-semibold text-civic-primary uppercase">{complaint.status}</span>
                     </div>
                   </div>
-                );
-              })}
+                </div>
+              </div>
+
+              <div className="rounded-3xl border border-civic-line bg-civic-surfaceSoft p-6">
+                <h3 className="text-lg font-semibold text-civic-text mb-6">Complaint Progress Timeline</h3>
+                <div className="relative border-l border-civic-line ml-4 space-y-8 pb-4">
+                  {STAGES.map((stage) => {
+                    const status = getStageStatus(stage.key);
+                    let badgeColor = 'bg-white border-civic-line text-civic-muted';
+                    let textColor = 'text-civic-muted';
+
+                    if (status === 'completed') {
+                      badgeColor = 'bg-civic-accent text-white border-civic-accent';
+                      textColor = 'text-civic-text';
+                    } else if (status === 'active') {
+                      badgeColor = 'bg-civic-primary text-white border-civic-primary ring-4 ring-civic-infoSoft';
+                      textColor = 'text-civic-text font-semibold';
+                    } else if (status === 'rejected') {
+                      badgeColor = 'bg-red-500 text-white border-red-500';
+                      textColor = 'text-red-600';
+                    }
+
+                    // Check for updates matching this status key in history
+                    const matches = timeline.filter(event => {
+                      const normalizedStatus = event.new_status.toLowerCase();
+                      return normalizedStatus === stage.key || 
+                             (stage.key === 'feedback_received' && normalizedStatus === 'feedback_received');
+                    });
+
+                    return (
+                      <div key={stage.key} className="relative pl-8">
+                        <div className={`absolute -left-3.5 top-0.5 flex h-7 w-7 items-center justify-center rounded-full border-2 ${badgeColor}`}>
+                          {status === 'completed' ? (
+                            <CheckCircle2 className="h-4 w-4" />
+                          ) : (
+                            <div className="h-2 w-2 rounded-full bg-current" />
+                          )}
+                        </div>
+                        <div>
+                          <h4 className={`text-base ${textColor}`}>{stage.label}</h4>
+                          <p className="mt-1 text-sm text-civic-muted">{stage.desc}</p>
+                          
+                          {matches.length > 0 && (
+                            <div className="mt-2 space-y-2">
+                              {matches.map(m => (
+                                <div key={m.id} className="bg-white/80 rounded-xl p-3 border border-civic-line text-xs text-civic-muted space-y-1">
+                                  <div className="flex items-center gap-1 text-civic-text font-medium">
+                                    <Info className="h-3.5 w-3.5 text-civic-primary" />
+                                    <span>{m.note}</span>
+                                  </div>
+                                  <div className="flex items-center justify-between text-[10px] pt-1">
+                                    <span className="flex items-center gap-1">
+                                      <Building className="h-3 w-3" /> By: {m.changed_by}
+                                    </span>
+                                    <span className="flex items-center gap-1">
+                                      <Calendar className="h-3 w-3" /> {new Date(m.changed_at).toLocaleString()}
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
     </SectionCard>

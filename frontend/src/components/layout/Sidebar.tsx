@@ -1,48 +1,88 @@
-import { NavLink } from 'react-router-dom';
-import { Building2, ChartColumnIncreasing, ClipboardList, Layers3, MapPinned, Gauge, FileText } from 'lucide-react';
-
-const links = [
-  { to: '/', label: 'Home', icon: Gauge },
-  { to: '/citizen', label: 'Complaint Form', icon: FileText },
-  { to: '/track', label: 'Track Complaint', icon: ClipboardList },
-  { to: '/admin', label: 'Executive Dashboard', icon: Building2 },
-  { to: '/clusters', label: 'Cluster Workspace', icon: Layers3 },
-  { to: '/analytics', label: 'Geographic Analytics', icon: MapPinned },
-  { to: '/department', label: 'Department View', icon: ChartColumnIncreasing },
-];
+import { NavLink, useLocation } from 'react-router-dom';
+import { Building2, ChartColumnIncreasing, ClipboardList, Layers3, MapPinned, Gauge, FileText, Home, LogOut, LayoutList } from 'lucide-react';
 
 export function Sidebar() {
+  const location = useLocation();
+  const isAdminPath = ['/admin', '/clusters', '/analytics', '/department'].some((path) =>
+    location.pathname.startsWith(path)
+  );
+
+  const citizenLinks = [
+    { to: '/', label: 'Home Portal', icon: Home },
+    { to: '/citizen', label: 'Raise Complaint', icon: FileText },
+    { to: '/my-complaints', label: 'My Complaints', icon: LayoutList },
+    { to: '/track', label: 'Track Complaint', icon: ClipboardList },
+  ];
+
+  const adminLinks = [
+    { to: '/admin', label: 'Admin Dashboard', icon: Building2 },
+    { to: '/clusters', label: 'Cluster Workspace', icon: Layers3 },
+    { to: '/analytics', label: 'Geographic Analytics', icon: MapPinned },
+    { to: '/department', label: 'Department View', icon: ChartColumnIncreasing },
+  ];
+
+  const links = isAdminPath ? adminLinks : citizenLinks;
+  const roleName = isAdminPath ? 'Admin Console' : 'Citizen Portal';
+
+  const handleAdminLogout = () => {
+    localStorage.removeItem('civiceye_admin_token');
+    localStorage.removeItem('civiceye_admin_user');
+    window.location.reload();
+  };
+
+  // Theme styling based on role
+  const asideBg = isAdminPath ? 'bg-[#0b1d2d] border-[#1e3a52]' : 'bg-white border-civic-line';
+  const textTitle = isAdminPath ? 'text-[#e6f1ff]' : 'text-[#0a192f]';
+  const textMuted = isAdminPath ? 'text-[#89a7c7]' : 'text-civic-muted';
+  const activeClass = isAdminPath ? 'bg-[#10283d] text-[#4fd1c5] border border-[#1e3a52]' : 'bg-civic-primary/10 text-civic-primary';
+  const inactiveClass = isAdminPath ? 'text-[#89a7c7] hover:bg-[#10283d] hover:text-[#e6f1ff]' : 'text-civic-text/80 hover:bg-civic-surfaceSoft hover:text-civic-text';
+
   return (
-    <aside className="flex h-full w-full flex-col border-r border-civic-line bg-civic-panel/95 p-5">
+    <aside className={`flex h-full w-full flex-col border-r p-5 ${asideBg} transition-colors duration-200 justify-between`}>
       <div>
-        <div className="text-xs uppercase tracking-[0.35em] text-civic-muted">CivicEye AI</div>
-        <h1 className="mt-2 text-2xl font-semibold text-civic-text">Governance Intelligence</h1>
-        <p className="mt-2 text-sm text-civic-muted">AI complaint intelligence, clustering, analytics, and transparency.</p>
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.35em] text-[#FF9933] font-bold">CivicEye AI</div>
+          <h1 className={`mt-2 text-xl font-extrabold ${textTitle}`}>{roleName}</h1>
+          <p className={`mt-2 text-xs leading-relaxed ${textMuted}`}>
+            National Redressal and Public grievance redirection system.
+          </p>
+        </div>
+
+        <nav className="mt-8 space-y-2">
+          {links.map((link) => {
+            const Icon = link.icon;
+            return (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                className={({ isActive }) =>
+                  [
+                    'flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition',
+                    isActive ? activeClass : inactiveClass,
+                  ].join(' ')
+                }
+              >
+                <Icon className="h-4 w-4" />
+                {link.label}
+              </NavLink>
+            );
+          })}
+        </nav>
       </div>
 
-      <nav className="mt-8 space-y-2">
-        {links.map((link) => {
-          const Icon = link.icon;
-          return (
-            <NavLink
-              key={link.to}
-              to={link.to}
-              className={({ isActive }) =>
-                [
-                  'flex items-center gap-3 rounded-2xl px-4 py-3 text-sm transition',
-                  isActive ? 'bg-civic-accent text-slate-950' : 'text-civic-text/80 hover:bg-white/5 hover:text-civic-text',
-                ].join(' ')
-              }
-            >
-              <Icon className="h-4 w-4" />
-              {link.label}
-            </NavLink>
-          );
-        })}
-      </nav>
-
-      <div className="mt-auto rounded-2xl border border-civic-line bg-civic-panelSoft p-4 text-sm text-civic-muted">
-        Stack: React 19, TypeScript, Tailwind, Router, Recharts, Leaflet.
+      <div className="space-y-4">
+        {isAdminPath && (
+          <button
+            onClick={handleAdminLogout}
+            className="flex items-center gap-3 w-full rounded-2xl px-4 py-3 text-sm font-semibold text-red-400 hover:bg-red-950/20 transition"
+          >
+            <LogOut className="h-4 w-4" />
+            Logout Console
+          </button>
+        )}
+        <div className={`rounded-2xl border p-4 text-xs ${isAdminPath ? 'border-[#1e3a52] bg-[#10283d] text-[#89a7c7]' : 'border-civic-line bg-civic-surfaceSoft text-civic-muted'}`}>
+          Digital India Grievance Redressal platform.
+        </div>
       </div>
     </aside>
   );

@@ -1,42 +1,93 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 
 export function Topbar() {
-  const [user, setUser] = useState<{ name: string; email: string } | null>(null);
+  const location = useLocation();
   const navigate = useNavigate();
+  const isAdminPath = ['/admin', '/clusters', '/analytics', '/department'].some((path) =>
+    location.pathname.startsWith(path)
+  );
+
+  const [citizen, setCitizen] = useState<{ name: string; email: string } | null>(null);
+  const [admin, setAdmin] = useState<{ name: string; email: string } | null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem('civiceye_user');
-    if (stored) {
+    // Read citizen details
+    const storedCitizen = localStorage.getItem('civiceye_user');
+    if (storedCitizen) {
       try {
-        setUser(JSON.parse(stored));
-      } catch (e) {
-        // ignore
-      }
+        setCitizen(JSON.parse(storedCitizen));
+      } catch (e) {}
     }
-  }, []);
 
-  const handleLogout = () => {
+    // Read admin details
+    const storedAdmin = localStorage.getItem('civiceye_admin_user');
+    if (storedAdmin) {
+      try {
+        setAdmin(JSON.parse(storedAdmin));
+      } catch (e) {}
+    }
+  }, [location.pathname]);
+
+  const handleCitizenLogout = () => {
     localStorage.removeItem('civiceye_token');
     localStorage.removeItem('civiceye_user');
-    setUser(null);
+    setCitizen(null);
     navigate('/');
     window.location.reload();
   };
 
+  const handleAdminLogout = () => {
+    localStorage.removeItem('civiceye_admin_token');
+    localStorage.removeItem('civiceye_admin_user');
+    setAdmin(null);
+    navigate('/');
+    window.location.reload();
+  };
+
+  // Styling based on role path
+  const headerBg = isAdminPath ? 'bg-[#0b1d2d] border-[#1e3a52]' : 'bg-white border-civic-line';
+  const textTitle = isAdminPath ? 'text-[#e6f1ff]' : 'text-[#0a192f]';
+  const textMuted = isAdminPath ? 'text-[#89a7c7]' : 'text-civic-muted';
+
   return (
-    <header className="flex flex-wrap items-center justify-between gap-4 border-b border-civic-line bg-white/70 px-6 py-4 backdrop-blur">
+    <header className={`flex flex-wrap items-center justify-between gap-4 border-b px-6 py-4 backdrop-blur ${headerBg} transition-colors duration-200`}>
       <div>
-        <p className="text-xs uppercase tracking-[0.28em] text-civic-muted">CivicEye AI</p>
-        <h2 className="text-xl font-semibold text-civic-text">Citizen grievance intelligence platform</h2>
+        <p className={`text-[10px] uppercase tracking-[0.28em] font-bold ${textMuted}`}>CivicEye AI redressal platform</p>
+        <h2 className={`text-lg font-bold ${textTitle}`}>
+          {isAdminPath ? 'Departmental Control Center' : 'Citizen Grievance Workspace'}
+        </h2>
       </div>
+
       <div className="flex items-center gap-4">
-        {user ? (
-          <div className="flex items-center gap-4">
-            <span className="text-sm font-medium text-civic-text">Welcome, {user.name}</span>
+        {isAdminPath ? (
+          admin ? (
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-semibold text-[#4fd1c5] bg-[#10283d] border border-[#1e3a52] px-3 py-1.5 rounded-full">
+                Admin: {admin.name}
+              </span>
+              <button
+                onClick={handleAdminLogout}
+                className="border border-[#1e3a52] bg-[#10283d] text-xs font-semibold px-4 py-1.5 rounded-full text-white hover:bg-[#07131f] transition"
+              >
+                Exit Console
+              </button>
+            </div>
+          ) : null
+        ) : citizen ? (
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-semibold text-civic-text bg-civic-surfaceSoft border border-civic-line px-3 py-1.5 rounded-full">
+              Citizen: {citizen.name}
+            </span>
+            <Link
+              to="/my-complaints"
+              className="border border-civic-line bg-civic-surface text-xs font-semibold px-4 py-1.5 rounded-full text-civic-text hover:bg-civic-surfaceSoft transition"
+            >
+              My Complaints
+            </Link>
             <button
-              onClick={handleLogout}
-              className="rounded-full border border-civic-line bg-civic-surface px-4 py-1.5 text-xs font-semibold text-civic-text hover:bg-civic-surfaceSoft transition"
+              onClick={handleCitizenLogout}
+              className="border border-civic-line bg-civic-surface text-xs font-semibold px-4 py-1.5 rounded-full text-civic-text hover:bg-civic-surfaceSoft transition"
             >
               Logout
             </button>

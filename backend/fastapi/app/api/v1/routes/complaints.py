@@ -160,6 +160,15 @@ def get_my_complaints(citizen: dict = Depends(get_current_citizen)):
         res_list = []
         for c in complaints:
             ai = sbclient.get_latest_ai_analysis(c["id"]) or {}
+            
+            category_name = ai.get("category")
+            if not category_name and c.get("category_id"):
+                category_name = sbclient.get_category_name_by_id(c["category_id"])
+                
+            department_name = ai.get("department_name")
+            if not department_name and c.get("department_id"):
+                department_name = sbclient.get_department_name_by_id(c["department_id"])
+
             res_list.append({
                 "id": c.get("id"),
                 "complaint_code": c.get("complaint_code"),
@@ -172,9 +181,9 @@ def get_my_complaints(citizen: dict = Depends(get_current_citizen)):
                 "pincode": c.get("pincode"),
                 "image_url": c.get("image_url"),
                 "status": c.get("status"),
-                "category": ai.get("category"),
-                "department": ai.get("department_name"),
-                "severity": ai.get("severity"),
+                "category": category_name,
+                "department": department_name,
+                "severity": ai.get("severity") or c.get("severity"),
                 "ai_confidence": c.get("ai_confidence"),
                 "ai_summary": ai.get("ai_summary"),
                 "generated_complaint": c.get("generated_complaint"),
@@ -192,6 +201,15 @@ def get_complaint(complaint_code: str):
         raise HTTPException(status_code=404, detail="Complaint not found")
 
     ai = sbclient.get_latest_ai_analysis(rec.get("id")) or {}
+    
+    category_name = ai.get("category")
+    if not category_name and rec.get("category_id"):
+        category_name = sbclient.get_category_name_by_id(rec["category_id"])
+        
+    department_name = ai.get("department_name")
+    if not department_name and rec.get("department_id"):
+        department_name = sbclient.get_department_name_by_id(rec["department_id"])
+
     return ComplaintResponse(
         id=rec.get("id"),
         complaint_code=rec.get("complaint_code"),
@@ -204,8 +222,8 @@ def get_complaint(complaint_code: str):
         pincode=rec.get("pincode"),
         image_url=rec.get("image_url"),
         status=rec.get("status"),
-        category=ai.get("category") or rec.get("category_id"), # fallback to id if raw text empty
-        department=ai.get("department_name") or rec.get("department_id"),
+        category=category_name,
+        department=department_name,
         severity=ai.get("severity") or rec.get("severity"),
         ai_confidence=rec.get("ai_confidence"),
         ai_summary=ai.get("ai_summary"),

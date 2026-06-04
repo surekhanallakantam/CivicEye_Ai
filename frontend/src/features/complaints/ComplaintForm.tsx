@@ -61,12 +61,12 @@ export function ComplaintForm() {
       setStatus(`Submitted successfully. Complaint code: ${response.complaint_code}`);
       setAiResult({
         complaint_code: response.complaint_code,
-        category: response.category || 'Categorizing...',
-        department: response.department || 'Routing...',
-        severity: response.severity || 'Medium',
-        ai_confidence: response.ai_confidence || 85,
-        ai_summary: response.ai_summary || 'Summary generating...',
-        generated_complaint: response.generated_complaint || '',
+        category: response.category,
+        department: response.department,
+        severity: response.severity,
+        ai_confidence: response.ai_confidence,
+        ai_summary: response.ai_summary,
+        generated_complaint: response.generated_complaint,
       });
       
       // Clear form description but keep profile details
@@ -76,6 +76,9 @@ export function ComplaintForm() {
         address: '',
         pincode: '',
       }));
+      
+      // Dispatch custom event to notify peer components (like MyComplaints)
+      window.dispatchEvent(new Event('complaint-submitted'));
     } catch (error) {
       setStatus(error instanceof Error ? error.message : 'Failed to submit complaint');
     } finally {
@@ -124,10 +127,10 @@ export function ComplaintForm() {
                     {aiResult.severity}
                   </span>
                 </div>
-                <div>
+                {/* <div>
                   <span className="text-civic-muted block text-xs uppercase tracking-wider">AI Confidence Score</span>
                   <span className="font-medium text-civic-text">{aiResult.ai_confidence}%</span>
-                </div>
+                </div> */}
               </div>
             </div>
 
@@ -137,8 +140,8 @@ export function ComplaintForm() {
                 <h4 className="font-semibold">Official Grievance Copy</h4>
               </div>
               <hr className="border-civic-line" />
-              <p className="text-sm italic leading-relaxed text-civic-muted bg-white p-4 rounded-2xl border border-civic-line">
-                "{aiResult.generated_complaint}"
+              <p className="text-sm italic leading-relaxed text-civic-muted bg-white p-4 rounded-2xl border border-civic-line whitespace-pre-line">
+                {aiResult.generated_complaint}
               </p>
             </div>
           </div>
@@ -164,8 +167,11 @@ export function ComplaintForm() {
       <form className="grid gap-4 md:grid-cols-2" onSubmit={handleSubmit}>
         <Input label="Name" value={form.name} onChange={(value) => update('name', value)} required />
         <Input label="Phone Number" value={form.phone || ''} onChange={(value) => update('phone', value)} />
-        <Input label="State" value={form.state} onChange={(value) => update('state', value)} required />
-        <Input label="City" value={form.city} onChange={(value) => update('city', value)} required />
+        <SelectState label="State" value={form.state} onChange={(value) => {
+          update('state', value);
+          update('city', ''); // reset city
+        }} required />
+        <SelectCity label="City" state={form.state} value={form.city} onChange={(value) => update('city', value)} required />
         <Input label="Address" value={form.address} onChange={(value) => update('address', value)} className="md:col-span-2" required />
         <Input label="Pincode" value={form.pincode} onChange={(value) => update('pincode', value)} required />
         <TextArea label="Problem Description" value={form.description} onChange={(value) => update('description', value)} className="md:col-span-2" required />
@@ -185,6 +191,72 @@ export function ComplaintForm() {
   );
 }
 
+const STATE_CITIES: Record<string, string[]> = {
+  'Andhra Pradesh': [
+    'Visakhapatnam',
+    'Vijayawada',
+    'Guntur',
+    'Nellore',
+    'Kurnool',
+    'Tirupati',
+    'Kakinada',
+    'Rajamahendravaram',
+    'Kadapa',
+    'Anantapur',
+  ],
+  'Telangana': [
+    'Hyderabad',
+    'Warangal',
+    'Nizamabad',
+    'Khammam',
+    'Karimnagar',
+    'Ramagundam',
+    'Mahabubnagar',
+    'Nalgonda',
+    'Adilabad',
+    'Suryapet',
+  ],
+};
+
+function SelectState({ label, value, onChange, required }: { label: string; value: string; onChange: (value: string) => void; required?: boolean }) {
+  return (
+    <label className="block">
+      <span className="mb-2 block text-sm text-civic-muted">{label} {required && <span className="text-red-500">*</span>}</span>
+      <select
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        required={required}
+        className="w-full rounded-2xl border border-civic-line bg-civic-panelSoft px-4 py-3 text-civic-text outline-none transition focus:border-civic-accent"
+      >
+        <option value="">Select State</option>
+        <option value="Andhra Pradesh">Andhra Pradesh</option>
+        <option value="Telangana">Telangana</option>
+      </select>
+    </label>
+  );
+}
+
+function SelectCity({ label, state, value, onChange, required }: { label: string; state: string; value: string; onChange: (value: string) => void; required?: boolean }) {
+  const cities = STATE_CITIES[state] || [];
+  return (
+    <label className="block">
+      <span className="mb-2 block text-sm text-civic-muted">{label} {required && <span className="text-red-500">*</span>}</span>
+      <select
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        required={required}
+        disabled={!state}
+        className="w-full rounded-2xl border border-civic-line bg-civic-panelSoft px-4 py-3 text-civic-text outline-none transition focus:border-civic-accent disabled:opacity-50"
+      >
+        <option value="">Select City</option>
+        {cities.map((c) => (
+          <option key={c} value={c}>{c}</option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
 type FieldProps = {
   label: string;
   value: string;
@@ -196,7 +268,7 @@ type FieldProps = {
 function Input({ label, value, onChange, className, required }: FieldProps) {
   return (
     <label className={className}>
-      <span className="mb-2 block text-sm text-civic-muted">{label}</span>
+      <span className="mb-2 block text-sm text-civic-muted">{label} {required && <span className="text-red-500">*</span>}</span>
       <input
         value={value}
         onChange={(event) => onChange(event.target.value)}
@@ -210,7 +282,7 @@ function Input({ label, value, onChange, className, required }: FieldProps) {
 function TextArea({ label, value, onChange, className, required }: FieldProps) {
   return (
     <label className={className}>
-      <span className="mb-2 block text-sm text-civic-muted">{label}</span>
+      <span className="mb-2 block text-sm text-civic-muted">{label} {required && <span className="text-red-500">*</span>}</span>
       <textarea
         value={value}
         onChange={(event) => onChange(event.target.value)}

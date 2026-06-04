@@ -34,6 +34,12 @@ export function MyComplaints() {
       }
     }
     loadData();
+
+    // Listen for custom submit event to automatically refresh list
+    window.addEventListener('complaint-submitted', loadData);
+    return () => {
+      window.removeEventListener('complaint-submitted', loadData);
+    };
   }, []);
 
   const handleCopy = (code: string) => {

@@ -17,9 +17,15 @@ export function LoginPage() {
 
     try {
       const response = await citizenLogin({ email, password });
-      localStorage.setItem('civiceye_token', response.access_token);
-      localStorage.setItem('civiceye_user', JSON.stringify(response.citizen));
-      navigate('/');
+      if (response.citizen?.role === 'admin') {
+        localStorage.setItem('civiceye_admin_token', response.access_token);
+        localStorage.setItem('civiceye_admin_user', JSON.stringify(response.citizen));
+        navigate('/admin');
+      } else {
+        localStorage.setItem('civiceye_token', response.access_token);
+        localStorage.setItem('civiceye_user', JSON.stringify(response.citizen));
+        navigate('/');
+      }
       window.location.reload();
     } catch (e: any) {
       setError(e.response?.data?.detail || 'Invalid email or password.');

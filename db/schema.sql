@@ -48,6 +48,7 @@ create table if not exists citizens (
   password_hash text not null,
   name text not null,
   phone_number text,
+  role text not null default 'citizen',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

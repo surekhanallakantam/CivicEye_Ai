@@ -128,3 +128,26 @@ def fetch_complaints_by_citizen(citizen_id: str) -> list:
     res = sb.table("complaints").select("*").eq("citizen_id", citizen_id).order("submitted_at", desc=True).execute()
     return res.data if res and hasattr(res, "data") and res.data else []
 
+
+def get_category_name_by_id(cat_id: str) -> Optional[str]:
+    if not cat_id:
+        return None
+    try:
+        sb = get_supabase_client()
+        res = sb.table("categories").select("name").eq("id", cat_id).execute()
+        return res.data[0]["name"] if res and hasattr(res, "data") and res.data else None
+    except Exception:
+        return None
+
+
+def get_department_name_by_id(dept_id: str) -> Optional[str]:
+    if not dept_id:
+        return None
+    try:
+        sb = get_supabase_client()
+        res = sb.table("departments").select("name").eq("id", dept_id).execute()
+        return res.data[0]["name"] if res and hasattr(res, "data") and res.data else None
+    except Exception:
+        return None
+
+

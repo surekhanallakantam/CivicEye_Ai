@@ -1,22 +1,18 @@
 import { Navigate } from 'react-router-dom';
 import { AppShell } from '@/components/layout/AppShell';
-import { ComplaintForm } from '@/features/complaints/ComplaintForm';
 import { MyComplaints } from '@/features/complaints/MyComplaints';
 
-export function CitizenComplaintPage() {
+export function MyComplaintsPage() {
   const token = localStorage.getItem('civiceye_token');
 
-  // Enforce authentication for the citizen dashboard
+  // Enforce citizen login to access complaint history
   if (!token) {
     return <Navigate to="/login" replace />;
   }
 
   return (
     <AppShell>
-      <div className="space-y-8">
-        <ComplaintForm />
-        <MyComplaints />
-      </div>
+      <MyComplaints />
     </AppShell>
   );
 }
