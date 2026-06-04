@@ -8,6 +8,8 @@ export type ComplaintCreatePayload = {
   city: string;
   address: string;
   pincode: string;
+  latitude?: number;
+  longitude?: number;
 };
 
 export async function submitComplaint(payload: ComplaintCreatePayload) {

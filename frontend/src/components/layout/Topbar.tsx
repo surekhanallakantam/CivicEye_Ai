@@ -46,9 +46,9 @@ export function Topbar() {
   };
 
   // Styling based on role path
-  const headerBg = isAdminPath ? 'bg-[#0b1d2d] border-[#1e3a52]' : 'bg-white border-civic-line';
-  const textTitle = isAdminPath ? 'text-[#e6f1ff]' : 'text-[#0a192f]';
-  const textMuted = isAdminPath ? 'text-[#89a7c7]' : 'text-civic-muted';
+  const headerBg = isAdminPath ? 'bg-white border-slate-200' : 'bg-white border-civic-line';
+  const textTitle = isAdminPath ? 'text-[#0a2240]' : 'text-[#0a192f]';
+  const textMuted = isAdminPath ? 'text-slate-500' : 'text-civic-muted';
 
   return (
     <header className={`flex flex-wrap items-center justify-between gap-4 border-b px-6 py-4 backdrop-blur ${headerBg} transition-colors duration-200`}>
@@ -63,12 +63,12 @@ export function Topbar() {
         {isAdminPath ? (
           admin ? (
             <div className="flex items-center gap-3">
-              <span className="text-xs font-semibold text-[#4fd1c5] bg-[#10283d] border border-[#1e3a52] px-3 py-1.5 rounded-full">
+              <span className="text-xs font-semibold text-[#1e3a8a] bg-[#dbeafe] border border-[#bfdbfe] px-3 py-1.5 rounded-full">
                 Admin: {admin.name}
               </span>
               <button
                 onClick={handleAdminLogout}
-                className="border border-[#1e3a52] bg-[#10283d] text-xs font-semibold px-4 py-1.5 rounded-full text-white hover:bg-[#07131f] transition"
+                className="border border-slate-200 bg-white text-xs font-semibold px-4 py-1.5 rounded-full text-slate-700 hover:bg-slate-50 transition"
               >
                 Exit Console
               </button>

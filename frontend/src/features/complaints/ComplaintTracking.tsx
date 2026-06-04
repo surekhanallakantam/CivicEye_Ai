@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { trackComplaint, trackComplaintTimeline } from '@/services/api/complaints';
 import { SectionCard } from '@/components/ui/SectionCard';
 import { Clock, CheckCircle2, AlertCircle, Building, Calendar, Info } from 'lucide-react';
@@ -70,6 +70,22 @@ export function ComplaintTracking() {
       setIsLoading(false);
     }
   };
+
+  // Listen for real-time status updates on the currently tracked complaint
+  useEffect(() => {
+    const handleWsUpdate = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail && complaint && detail.complaint_id === complaint.id) {
+        trackComplaint(complaint.complaint_code).then(setComplaint).catch(console.error);
+        trackComplaintTimeline(complaint.complaint_code).then(res => setTimeline(res.timeline || [])).catch(console.error);
+      }
+    };
+    
+    window.addEventListener('ws-complaint_updated', handleWsUpdate);
+    return () => {
+      window.removeEventListener('ws-complaint_updated', handleWsUpdate);
+    };
+  }, [complaint]);
 
   const getStageStatus = (stageKey: string) => {
     if (!complaint) return 'pending';

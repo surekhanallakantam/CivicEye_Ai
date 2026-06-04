@@ -12,6 +12,8 @@ export default {
           background: '#eef5ff',
           surface: '#ffffff',
           surfaceSoft: '#f7f9fd',
+          panel: '#ffffff',
+          panelSoft: '#f7f9fd',
           line: '#dde6f0',
           text: '#16213a',
           muted: '#66768f',

@@ -3,7 +3,7 @@ import { Building2, ChartColumnIncreasing, ClipboardList, Layers3, MapPinned, Ga
 
 export function Sidebar() {
   const location = useLocation();
-  const isAdminPath = ['/admin', '/clusters', '/analytics', '/department'].some((path) =>
+  const isAdminPath = ['/admin', '/analytics', '/department'].some((path) =>
     location.pathname.startsWith(path)
   );
 
@@ -16,7 +16,6 @@ export function Sidebar() {
 
   const adminLinks = [
     { to: '/admin', label: 'Admin Dashboard', icon: Building2 },
-    { to: '/clusters', label: 'Cluster Workspace', icon: Layers3 },
     { to: '/analytics', label: 'Geographic Analytics', icon: MapPinned },
     { to: '/department', label: 'Department View', icon: ChartColumnIncreasing },
   ];
@@ -31,11 +30,11 @@ export function Sidebar() {
   };
 
   // Theme styling based on role
-  const asideBg = isAdminPath ? 'bg-[#0b1d2d] border-[#1e3a52]' : 'bg-white border-civic-line';
-  const textTitle = isAdminPath ? 'text-[#e6f1ff]' : 'text-[#0a192f]';
-  const textMuted = isAdminPath ? 'text-[#89a7c7]' : 'text-civic-muted';
-  const activeClass = isAdminPath ? 'bg-[#10283d] text-[#4fd1c5] border border-[#1e3a52]' : 'bg-civic-primary/10 text-civic-primary';
-  const inactiveClass = isAdminPath ? 'text-[#89a7c7] hover:bg-[#10283d] hover:text-[#e6f1ff]' : 'text-civic-text/80 hover:bg-civic-surfaceSoft hover:text-civic-text';
+  const asideBg = isAdminPath ? 'bg-white border-slate-200' : 'bg-white border-civic-line';
+  const textTitle = isAdminPath ? 'text-[#0a2240]' : 'text-[#0a192f]';
+  const textMuted = isAdminPath ? 'text-slate-500' : 'text-civic-muted';
+  const activeClass = isAdminPath ? 'bg-[#eff6ff] text-[#1d5fe0] border-l-4 border-l-[#FF9933]' : 'bg-civic-primary/10 text-civic-primary';
+  const inactiveClass = isAdminPath ? 'text-slate-600 hover:bg-slate-50 hover:text-[#0a2240]' : 'text-civic-text/80 hover:bg-civic-surfaceSoft hover:text-civic-text';
 
   return (
     <aside className={`flex h-full w-full flex-col border-r p-5 ${asideBg} transition-colors duration-200 justify-between`}>
@@ -47,7 +46,7 @@ export function Sidebar() {
             National Redressal and Public grievance redirection system.
           </p>
         </div>
-
+ 
         <nav className="mt-8 space-y-2">
           {links.map((link) => {
             const Icon = link.icon;
@@ -69,18 +68,18 @@ export function Sidebar() {
           })}
         </nav>
       </div>
-
+ 
       <div className="space-y-4">
         {isAdminPath && (
           <button
             onClick={handleAdminLogout}
-            className="flex items-center gap-3 w-full rounded-2xl px-4 py-3 text-sm font-semibold text-red-400 hover:bg-red-950/20 transition"
+            className="flex items-center gap-3 w-full rounded-2xl px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-50 transition"
           >
             <LogOut className="h-4 w-4" />
             Logout Console
           </button>
         )}
-        <div className={`rounded-2xl border p-4 text-xs ${isAdminPath ? 'border-[#1e3a52] bg-[#10283d] text-[#89a7c7]' : 'border-civic-line bg-civic-surfaceSoft text-civic-muted'}`}>
+        <div className={`rounded-2xl border p-4 text-xs ${isAdminPath ? 'border-slate-200 bg-[#f8fafc] text-slate-500' : 'border-civic-line bg-civic-surfaceSoft text-civic-muted'}`}>
           Digital India Grievance Redressal platform.
         </div>
       </div>

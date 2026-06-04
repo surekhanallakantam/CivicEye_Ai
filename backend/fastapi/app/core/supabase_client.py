@@ -160,3 +160,16 @@ def get_department_name_by_id(dept_id: str) -> Optional[str]:
         return None
 
 
+def fetch_all_departments() -> list:
+    sb = get_supabase_client()
+    res = sb.table("departments").select("*").order("name", desc=False).execute()
+    return res.data if res and hasattr(res, "data") and res.data else []
+
+
+def fetch_complaints_by_department(dept_id: str) -> list:
+    sb = get_supabase_client()
+    res = sb.table("complaints").select("*").eq("department_id", dept_id).order("submitted_at", desc=True).execute()
+    return res.data if res and hasattr(res, "data") and res.data else []
+
+
+

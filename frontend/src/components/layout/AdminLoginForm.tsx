@@ -37,7 +37,7 @@ export function AdminLoginForm({ onLoginSuccess }: AdminLoginFormProps) {
   };
 
   return (
-    <div className="relative flex min-h-screen w-full items-center justify-center bg-[#07131f] px-4 py-12 text-[#e6f1ff] overflow-hidden">
+    <div className="relative flex min-h-screen w-full items-center justify-center bg-[#f8fafc] px-4 py-12 text-slate-900 overflow-hidden">
       {/* Tricolor top header stripe */}
       <div className="absolute top-0 left-0 h-1.5 w-full flex">
         <div className="h-full w-1/3 bg-[#FF9933]"></div>
@@ -46,52 +46,52 @@ export function AdminLoginForm({ onLoginSuccess }: AdminLoginFormProps) {
       </div>
 
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-24 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-blue-900/20 blur-3xl" />
-        <div className="absolute right-0 top-52 h-72 w-72 rounded-full bg-teal-900/10 blur-3xl" />
+        <div className="absolute -top-24 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-blue-100/40 blur-3xl" />
+        <div className="absolute right-0 top-52 h-72 w-72 rounded-full bg-teal-50/30 blur-3xl" />
       </div>
 
-      <div className="relative w-full max-w-md rounded-[2rem] border border-[#1e3a52] bg-[#0b1d2d] p-8 shadow-soft backdrop-blur sm:p-10">
+      <div className="relative w-full max-w-md rounded-[2rem] border border-slate-200 bg-white p-8 shadow-soft backdrop-blur sm:p-10">
         <div className="flex flex-col items-center text-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#10283d] text-white shadow-sm mb-4 border border-[#1e3a52]">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 text-[#0a2240] shadow-sm mb-4 border border-slate-200">
             <Landmark className="h-8 w-8 text-[#FF9933]" />
           </div>
-          <h2 className="text-3xl font-bold tracking-tight text-[#e6f1ff]">Admin Console</h2>
-          <p className="mt-2 text-sm text-[#89a7c7]">Ministry Administration & Redressal Redirection</p>
+          <h2 className="text-3xl font-bold tracking-tight text-[#0a2240]">Admin Console</h2>
+          <p className="mt-2 text-sm text-slate-500">Ministry Administration & Redressal Redirection</p>
         </div>
 
         {error && (
-          <div className="mt-6 rounded-2xl bg-red-950/40 border border-red-800 p-4 text-sm text-red-400">
+          <div className="mt-6 rounded-2xl bg-red-50 border border-red-200 p-4 text-sm text-red-600">
             {error}
           </div>
         )}
 
         <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
           <label className="block">
-            <span className="mb-2 block text-sm font-semibold text-[#e6f1ff]">Admin Email</span>
+            <span className="mb-2 block text-sm font-semibold text-slate-700">Admin Email</span>
             <div className="relative">
-              <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#89a7c7]" />
+              <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="surekhanallakantham@gmail.com"
-                className="w-full rounded-2xl border border-[#1e3a52] bg-[#10283d] px-4 py-3 pl-11 text-white outline-none transition placeholder:text-[#89a7c7]/50 focus:border-[#4fd1c5]"
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 pl-11 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1d5fe0] focus:bg-white"
               />
             </div>
           </label>
 
           <label className="block">
-            <span className="mb-2 block text-sm font-semibold text-[#e6f1ff]">Security Password</span>
+            <span className="mb-2 block text-sm font-semibold text-slate-700">Security Password</span>
             <div className="relative">
-              <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#89a7c7]" />
+              <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full rounded-2xl border border-[#1e3a52] bg-[#10283d] px-4 py-3 pl-11 text-white outline-none transition placeholder:text-[#89a7c7]/50 focus:border-[#4fd1c5]"
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 pl-11 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1d5fe0] focus:bg-white"
               />
             </div>
           </label>
@@ -99,16 +99,16 @@ export function AdminLoginForm({ onLoginSuccess }: AdminLoginFormProps) {
           <button
             type="submit"
             disabled={isLoading}
-            className="inline-flex w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-blue-600 to-teal-600 px-6 py-4 text-base font-semibold text-white shadow-glow transition hover:scale-[1.01] hover:brightness-105 disabled:opacity-60"
+            className="inline-flex w-full items-center justify-center gap-3 rounded-2xl bg-[#0a2240] px-6 py-4 text-base font-semibold text-white shadow-sm transition hover:bg-[#071930] hover:scale-[1.01] disabled:opacity-60"
           >
             {isLoading ? 'Authenticating...' : 'Access Admin Panel'}
             <ArrowRight className="h-5 w-5" />
           </button>
         </form>
 
-        <div className="mt-8 text-center text-xs text-[#89a7c7]">
+        <div className="mt-8 text-center text-xs text-slate-500">
           Use official credentials: <br />
-          <span className="font-mono text-white/80">surekhanallakantham@gmail.com</span> / <span className="font-mono text-white/80">surekha@123</span>
+          <span className="font-mono text-slate-700 font-semibold">surekhanallakantham@gmail.com</span> / <span className="font-mono text-slate-700 font-semibold">surekha@123</span>
         </div>
       </div>
     </div>

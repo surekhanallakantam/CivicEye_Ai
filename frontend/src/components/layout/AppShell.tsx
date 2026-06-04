@@ -25,8 +25,8 @@ export function AppShell({ children }: AppShellProps) {
   }
 
   // Theme configuration based on admin vs citizen path
-  const shellBg = isAdminPath ? 'bg-[#07131f] text-[#e6f1ff]' : 'bg-civic-page text-civic-text';
-  const mainBg = isAdminPath ? 'bg-[#0b1d2d]' : 'bg-[#eef5ff]';
+  const shellBg = isAdminPath ? 'bg-[#f1f5f9] text-[#0f172a]' : 'bg-civic-page text-civic-text';
+  const mainBg = isAdminPath ? 'bg-[#f8fafc]' : 'bg-[#eef5ff]';
 
   return (
     <div className={`min-h-screen ${shellBg} transition-colors duration-200 flex flex-col`}>

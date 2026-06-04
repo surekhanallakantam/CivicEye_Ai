@@ -35,10 +35,14 @@ export function MyComplaints() {
     }
     loadData();
 
-    // Listen for custom submit event to automatically refresh list
+    // Listen for custom submit event and websocket events to automatically refresh list
     window.addEventListener('complaint-submitted', loadData);
+    window.addEventListener('ws-complaint_created', loadData);
+    window.addEventListener('ws-complaint_updated', loadData);
     return () => {
       window.removeEventListener('complaint-submitted', loadData);
+      window.removeEventListener('ws-complaint_created', loadData);
+      window.removeEventListener('ws-complaint_updated', loadData);
     };
   }, []);
 

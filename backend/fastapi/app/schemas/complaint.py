@@ -12,6 +12,8 @@ class ComplaintCreate(BaseModel):
     address: str
     pincode: str
     image_url: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
 
 
 class ComplaintResponse(BaseModel):

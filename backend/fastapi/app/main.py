@@ -29,6 +29,22 @@ app.include_router(clusters_routes.router, prefix="/api/v1/admin/clusters", tags
 app.include_router(analytics_routes.router, prefix="/api/v1/admin", tags=["analytics"])
 
 
+from fastapi import WebSocket, WebSocketDisconnect
+from app.core.websocket import manager
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await manager.connect(websocket)
+    try:
+        while True:
+            # Keep the socket open and receive message if client speaks
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
+    except Exception:
+        manager.disconnect(websocket)
+
+
 @app.get("/health")
 def health_check() -> dict:
     return {

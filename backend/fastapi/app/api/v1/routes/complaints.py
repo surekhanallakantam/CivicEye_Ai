@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends, Request
 from app.schemas.complaint import ComplaintCreate, ComplaintResponse
 from app.core import supabase_client as sbclient
 from app.ai import service as ai_service
+from app.core.websocket import manager
 from app.api.v1.routes.auth import get_current_citizen
 from app.core.security import verify_access_token
 from datetime import datetime
@@ -31,7 +32,7 @@ def get_optional_citizen(request: Request) -> Optional[dict]:
 
 
 @router.post("/", response_model=ComplaintResponse)
-def create_complaint(payload: ComplaintCreate, request: Request):
+async def create_complaint(payload: ComplaintCreate, request: Request):
     data = payload.dict()
     complaint_code = generate_complaint_code()
     insert_payload = {
@@ -43,6 +44,8 @@ def create_complaint(payload: ComplaintCreate, request: Request):
         "city": data["city"],
         "address": data["address"],
         "pincode": data["pincode"],
+        "latitude": data.get("latitude"),
+        "longitude": data.get("longitude"),
         "image_url": data.get("image_url"),
         "status": "submitted",
         "submitted_at": datetime.utcnow().isoformat(),
@@ -96,6 +99,7 @@ def create_complaint(payload: ComplaintCreate, request: Request):
         update_data = {
             "generated_complaint": gen_result.get("generated_complaint"),
             "ai_confidence": ai_result.get("confidence"),
+            "severity": ai_result.get("severity"),
             "updated_at": datetime.utcnow().isoformat(),
         }
         
@@ -125,6 +129,11 @@ def create_complaint(payload: ComplaintCreate, request: Request):
             "changed_by": "system",
             "note": "Citizen complaint created",
             "changed_at": datetime.utcnow().isoformat(),
+        })
+        # Broadcast real-time creation event
+        await manager.broadcast({
+            "event": "complaint_created",
+            "complaint_id": complaint_id
         })
     except Exception:
         # non-fatal; AI persistence failure shouldn't block complaint creation
