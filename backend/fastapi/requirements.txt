@@ -6,3 +6,5 @@ httpx
 supabase
 scikit-learn
 pyjwt
+numpy
+requests

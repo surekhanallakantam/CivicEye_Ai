@@ -7,11 +7,20 @@ except Exception:
     create_client = None
 
 
+# Global cached client to reuse connection pool
+_supabase_client = None
+
+
 def get_supabase_client():
+    global _supabase_client
+    if _supabase_client is not None:
+        return _supabase_client
+
     if create_client is None:
         raise RuntimeError("supabase client library is not installed")
     key = settings.supabase_service_role_key or settings.supabase_anon_key
-    return create_client(settings.supabase_url, key)
+    _supabase_client = create_client(settings.supabase_url, key)
+    return _supabase_client
 
 
 def insert_complaint(payload: Dict[str, Any]) -> Dict[str, Any]:
